@@ -52,3 +52,30 @@ exports.update = async (request, response) => {
 
   return response.status(updateResult.code).json(updateResult);
 };
+
+exports.getOne = async (request, response) => {
+  const userId = request.params.userId;
+
+  const user = await userService.getOne(userId);
+  return response.status(user.code).json(user);
+};
+exports.getAll = async (request, response) => {
+  const pageNumber = request.query.pageNumber || 1;
+  const numberOfUsers = request.query.numberOfUsers || 5;
+
+  if (+pageNumber < 1) {
+    const res = constants.invalidDataResponse(
+      "invalid page number. The page Number should be greater than 0"
+    );
+    return response.status(res.code).json(res);
+  }
+  if (+numberOfUsers < 1) {
+    const res = constants.invalidDataResponse(
+      "invalid number of users. The number of users should be greater than 0"
+    );
+    return response.status(res.code).json(res);
+  }
+
+  const users = await userService.getAll(pageNumber, numberOfUsers);
+  return response.status(users.code).json(users);
+};

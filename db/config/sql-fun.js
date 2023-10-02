@@ -55,6 +55,23 @@ exports.deleteConfirm = async (knex, tableName, whereCluse) => {
 exports.select = async (tableName, atrributesArray, whereCluse) => {
   return knex.select(atrributesArray).from(`${tableName}`).where(whereCluse);
 };
+exports.selectCount = async (tableName, columnName, alias) => {
+  return knex(tableName).count(columnName, { as: alias });
+};
+exports.selectPage = async (
+  tableName,
+  atrributesArray,
+  offset,
+  numberOfRecords,
+  whereCluse
+) => {
+  return knex
+    .select(atrributesArray)
+    .from(`${tableName}`)
+    .offset(offset)
+    .limit(numberOfRecords)
+    .where(whereCluse);
+};
 
 // new
 

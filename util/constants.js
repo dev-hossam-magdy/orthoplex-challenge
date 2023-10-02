@@ -35,6 +35,8 @@ const loginSuccess = {
   msg: "login success",
 };
 
+const successCode = 200;
+
 const unauthorized = {
   status: "error",
   code: 401,
@@ -80,6 +82,7 @@ const internalServerError = {
 };
 
 module.exports = {
+  successCode,
   insertError,
   insertSuccess,
   duplicatedData,

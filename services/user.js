@@ -9,7 +9,10 @@ exports.login = async (user) => {
   const whereCluse = trans.addCondations({
     email: user.email,
   });
-  const selectOneResult = await userQueries.selectOne(whereCluse);
+  const selectOneResult = await userQueries.selectOne(
+    ["id", "password_salt", "password"],
+    whereCluse
+  );
   if (selectOneResult[0] == null) {
     return constants.itemNotFound;
   }
@@ -37,7 +40,7 @@ exports.login = async (user) => {
 };
 
 exports.add = async (user) => {
-  const checkEmailDuplication = await userQueries.selectOne({
+  const checkEmailDuplication = await userQueries.selectOne(["is_deleted"], {
     email: user.email,
   });
 
@@ -64,7 +67,7 @@ exports.add = async (user) => {
 };
 
 exports.delete = async (userId) => {
-  const selectOneResult = await userQueries.selectOne({
+  const selectOneResult = await userQueries.selectOne(["is_deleted"], {
     id: userId,
   });
   if (selectOneResult[0] == null) {
@@ -82,7 +85,7 @@ exports.delete = async (userId) => {
 };
 
 exports.update = async (user) => {
-  const itemIsFound = await userQueries.selectOne({
+  const itemIsFound = await userQueries.selectOne(["is_deleted"], {
     id: user.id,
   });
 
@@ -105,4 +108,44 @@ exports.update = async (user) => {
     }
     return constants.updateError;
   }
+};
+
+exports.getOne = async (userId) => {
+  const users = await userQueries.selectOne(["name", "email", "is_deleted"], {
+    id: userId,
+  });
+
+  if (users[0] == null) {
+    return constants.itemNotFound;
+  } else if (users[0].is_deleted) {
+    return constants.itemIsDeletedBefore;
+  } else {
+    users[0].code = constants.successCode;
+    return users[0];
+  }
+};
+
+exports.getAll = async (pageNumber, numberOfUsersPerPage) => {
+  const offset = (pageNumber - 1) * numberOfUsersPerPage;
+
+  const [users, selectCount] = await Promise.all([
+    userQueries.selectAll(offset, numberOfUsersPerPage),
+    userQueries.selectCountOfRecords(offset, numberOfUsersPerPage),
+  ]);
+  const numberOfPages = Math.ceil(
+    selectCount[0].number_of_records / numberOfUsersPerPage
+  );
+
+  if (numberOfPages < pageNumber) {
+    const res = constants.invalidDataResponse(
+      `Invalid page number. The page number shouldn't be greater than ${numberOfPages}`
+    );
+    return res;
+  }
+
+  return {
+    users,
+    numberOfPages,
+    code: constants.successCode,
+  };
 };

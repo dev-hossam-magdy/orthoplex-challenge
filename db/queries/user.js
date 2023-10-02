@@ -1,11 +1,11 @@
 const sqlFun = require("../config/sql-fun");
 const userTableName = require("../../util/database-tables-name").userTableName;
 
-exports.selectOne = async (whereCluse) => {
+exports.selectOne = async (atrributes, whereCluse) => {
   try {
     const queryResults = await sqlFun.limitedSelect(
       userTableName,
-      ["name", "password_salt", "password", "is_deleted"],
+      atrributes,
       whereCluse,
       1
     );
@@ -72,6 +72,37 @@ exports.update = async (user) => {
       }
     );
     return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+exports.selectAll = async (offset, numberOfUser) => {
+  try {
+    const users = await sqlFun.selectPage(
+      userTableName,
+      ["name", "email"],
+      offset,
+      numberOfUser,
+      {
+        is_deleted: 0,
+      }
+    );
+    return users;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+exports.selectCountOfRecords = async () => {
+  try {
+    const users = await sqlFun.selectCount(
+      userTableName,
+      "id",
+      "number_of_records"
+    );
+    return users;
   } catch (error) {
     console.log(error);
     return false;
