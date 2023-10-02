@@ -56,9 +56,53 @@ exports.add = async (user) => {
   user.hashedPassword = hashedPassword;
   user.id = trans.transform();
 
-  const queryResults = await userQueries.insert(user);
-  if (queryResults === false) {
-    return constants.insertError;
+  const isAdded = await userQueries.insert(user);
+  if (isAdded) {
+    return constants.insertSuccess;
   }
-  return constants.insertSuccess;
+  return constants.insertError;
+};
+
+exports.delete = async (userId) => {
+  const selectOneResult = await userQueries.selectOne({
+    id: userId,
+  });
+  if (selectOneResult[0] == null) {
+    return constants.itemNotFound;
+  } else {
+    console.log(selectOneResult[0].is_deleted);
+    if (selectOneResult[0].is_deleted) {
+      return constants.itemIsDeletedBefore;
+    }
+
+    const isItemDeleted = await userQueries.delete(userId);
+    if (isItemDeleted) return constants.deleteSuccess;
+    else return constants.deleteError;
+  }
+};
+
+exports.update = async (user) => {
+  const itemIsFound = await userQueries.selectOne({
+    id: user.id,
+  });
+
+  if (itemIsFound[0] == null) {
+    return constants.itemNotFound;
+  } else {
+    if (itemIsFound[0].is_deleted) {
+      return constants.itemIsDeletedBefore;
+    }
+  }
+
+  const checkEmailDuplication = await userQueries.checkDuplication(user);
+
+  if (checkEmailDuplication[0] != null) {
+    return constants.duplicatedData;
+  } else {
+    const isUpdated = await userQueries.update(user);
+    if (isUpdated) {
+      return constants.updateSuccess;
+    }
+    return constants.updateError;
+  }
 };

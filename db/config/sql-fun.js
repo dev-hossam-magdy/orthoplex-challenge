@@ -96,7 +96,6 @@ exports.selectRelatedServices = async (
 };
 // new
 exports.selectWithOrder = async (
-  knex,
   tableName,
   atrributesArray,
   whereCluse,
@@ -110,7 +109,6 @@ exports.selectWithOrder = async (
 };
 
 exports.checkDuplicatedDataByUpdate = async (
-  knex,
   tableName,
   idName,
   recoredId,
@@ -120,7 +118,8 @@ exports.checkDuplicatedDataByUpdate = async (
     .select(["is_deleted"])
     .from(`${tableName}`)
     .whereNot(`${idName}`, recoredId)
-    .where(whereCluseFun);
+    .where(whereCluseFun)
+    .limit(1);
 };
 
 exports.checkDuplicatedDataByAdd = async (knex, tableName, whereCluseFun) => {

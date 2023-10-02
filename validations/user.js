@@ -24,3 +24,15 @@ exports.validate = (user) => {
     error: validate.error,
   };
 };
+exports.validateUpdatePayload = (user) => {
+  const userSchema = joi.object({
+    id: validations.joiId,
+    name: validations.joiName,
+    email: validations.joiEmail,
+  });
+  const validate = userSchema.validate(user);
+
+  return {
+    error: validate.error,
+  };
+};

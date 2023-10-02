@@ -40,11 +40,45 @@ const unauthorized = {
   code: 401,
   msg: "unauthorized",
 };
+const tokenRequired = {
+  status: "error",
+  code: 403,
+  msg: "no token provided",
+};
+
+const deleteError = {
+  code: 500,
+  status: "error",
+  msg: "Faild to delete",
+};
+const deleteSuccess = {
+  code: 200,
+  status: "success",
+  msg: "the item is delete",
+};
+
+const updateSuccess = {
+  status: "success",
+  code: 200,
+  msg: "data updated",
+};
+const updateError = {
+  status: "error",
+  code: 500,
+  msg: "faild to update the data",
+};
+
+const itemIsDeletedBefore = {
+  status: "error",
+  code: 400,
+  msg: "The Item is Deleted Before",
+};
 const internalServerError = {
   status: "error",
   code: 500,
   msg: "server error",
 };
+
 module.exports = {
   insertError,
   insertSuccess,
@@ -53,5 +87,11 @@ module.exports = {
   itemNotFound,
   loginSuccess,
   unauthorized,
-  internalServerError
+  internalServerError,
+  tokenRequired,
+  itemIsDeletedBefore,
+  deleteError,
+  deleteSuccess,
+  updateSuccess,
+  updateError,
 };
